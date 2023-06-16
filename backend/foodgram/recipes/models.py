@@ -36,6 +36,12 @@ class Recipe(models.Model):
     created = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
 
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 class Favorite(models.Model):
     user = models.ForeignKey(
@@ -43,10 +49,13 @@ class Favorite(models.Model):
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
-        Recipes,
+        Recipe,
         on_delete=models.CASCADE,
     )
-
+    
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
 
 class Purchase(models.Model):
     user = models.ForeignKey(
@@ -58,21 +67,42 @@ class Purchase(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        verbose_name = 'Покупка'
+        verbose_name_plural = 'Покупки'
 
 class Subscription(models.Model):
     user = models.ForeignKey(
         User,
+        related_name='follower',
         verbose_name='Кто подписывается',
         on_delete=models.CASCADE
     )
     following = models.ForeignKey(
         User,
+        related_name='following',
         verbose_name='На кого подписывается',
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
+    measurement_unit = models.CharField(
+        max_length=16,
+        choices=CHOICES
+    )
+    
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
 
 
 class Tag(models.Model):
@@ -80,6 +110,14 @@ class Tag(models.Model):
     color = models.CharField(max_length=16)
     slug = models.SlugField(unique=True)
 
+    def __str__(self):
+        return self.name
+
+
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+    
 
 class Recipe_tag(models.Model):
     recipe = models.ForeignKey(
@@ -91,17 +129,26 @@ class Recipe_tag(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        verbose_name = 'Тэг рецепта'
+        verbose_name_plural = 'Тэги рецептов'
+
 
 class Ingredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='ingredients'
     )
     product = models.ForeignKey(
-        Recipe,
+        Product,
         on_delete=models.PROTECT,
     )
     measurement_unit = models.CharField(
         max_length=16,
         choices=CHOICES
     )
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
