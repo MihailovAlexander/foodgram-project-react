@@ -25,52 +25,6 @@ CHOICES = (
 User = get_user_model()
 
 
-class Recipe(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='recipes')
-    name = models.CharField(max_length=100)
-    image = models.ImageField(
-        upload_to='recipes/', null=True, blank=True)
-    text = models.TextField()
-    cooking_time = models.PositiveSmallIntegerField()
-    created = models.DateTimeField(
-        'Дата добавления', auto_now_add=True, db_index=True)
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Рецепт'
-        verbose_name_plural = 'Рецепты'
-
-class Favorite(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-    )
-    
-    class Meta:
-        verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранное'
-
-class Purchase(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = 'Покупка'
-        verbose_name_plural = 'Покупки'
-
 class Subscription(models.Model):
     user = models.ForeignKey(
         User,
@@ -96,7 +50,7 @@ class Product(models.Model):
         max_length=16,
         choices=CHOICES
     )
-    
+
     def __str__(self):
         return self.name
 
@@ -113,25 +67,65 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
-    
 
-class Recipe_tag(models.Model):
+
+class Recipe(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name='recipes'
+    )
+    name = models.CharField(max_length=100)
+    image = models.ImageField(
+        upload_to='recipes/', null=True, blank=True)
+    text = models.TextField()
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='recipes',
+    )
+    cooking_time = models.PositiveSmallIntegerField()
+    created = models.DateTimeField(
+        'Дата добавления', auto_now_add=True, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
     )
-    tag = models.ForeignKey(
-        Tag,
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+
+
+class Purchase(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
         on_delete=models.CASCADE,
     )
 
     class Meta:
-        verbose_name = 'Тэг рецепта'
-        verbose_name_plural = 'Тэги рецептов'
+        verbose_name = 'Покупка'
+        verbose_name_plural = 'Покупки'
 
 
 class Ingredient(models.Model):
@@ -148,6 +142,7 @@ class Ingredient(models.Model):
         max_length=16,
         choices=CHOICES
     )
+    amount = models.FloatField()
 
     class Meta:
         verbose_name = 'Ингредиент'

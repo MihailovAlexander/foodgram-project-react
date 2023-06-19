@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Recipe, Favorite, Purchase, Subscription,
-    Product, Tag, Recipe_tag, Ingredient
+    Product, Tag, Ingredient
 )
 
 
@@ -15,9 +15,15 @@ class RecipeAdmin(admin.ModelAdmin):
         'cooking_time',
         'created',
     )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
+    fields = (
+        ('name', 'cooking_time',),
+        ('author', 'tags',),
+        ('text',),
+        ('image',),
+    )
+    list_editable = ('author',)
+    search_fields = ('author__username', 'name',)
+    list_filter = ('author', 'name',)
     empty_value_display = '-пусто-'
 
 
@@ -82,28 +88,17 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class Recipe_tagAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk',
-        'recipe',
-        'tag',
-    )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
-    empty_value_display = '-пусто-'
-
-
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'recipe',
         'product',
         'measurement_unit',
+        'amount',
     )
-    # list_editable = ('group',)
+    list_editable = ('product', 'measurement_unit',)
     # search_fields = ('text',)
-    # list_filter = ('pub_date',)
+    list_filter = ('recipe', 'product',)
     empty_value_display = '-пусто-'
 
 
@@ -113,5 +108,4 @@ admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Tag, TagAdmin)
-admin.site.register(Recipe_tag, Recipe_tagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
