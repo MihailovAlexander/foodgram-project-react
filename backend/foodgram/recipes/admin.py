@@ -35,7 +35,6 @@ class IngredientListAdmin(admin.ModelAdmin):
         'amount',
     )
     list_editable = ('ingredients',)
-    #search_fields = ('recipe__name', 'ingredients__product',)
     list_filter = ('recipe', 'ingredients',)
     empty_value_display = '-пусто-'
 
