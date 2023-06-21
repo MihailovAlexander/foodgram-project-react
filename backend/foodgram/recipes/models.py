@@ -44,21 +44,6 @@ class Subscription(models.Model):
         verbose_name_plural = 'Подписки'
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    measurement_unit = models.CharField(
-        max_length=16,
-        choices=CHOICES
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Продукт'
-        verbose_name_plural = 'Продукты'
-
-
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=16)
@@ -72,6 +57,21 @@ class Tag(models.Model):
         verbose_name_plural = 'Тэги'
 
 
+class Ingredient(models.Model):
+    product = models.CharField(max_length=50)
+    measurement_unit = models.CharField(
+        max_length=16,
+        choices=CHOICES
+    )
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+    
+    def __str__(self) -> str:
+        return f'{self.product}, {self.measurement_unit}'
+
+
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -82,6 +82,12 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/', null=True, blank=True)
     text = models.TextField()
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='recipes.IngredientList',
+        verbose_name='Ингредиенты блюда',
+        related_name='recipes',
+    )
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
@@ -97,6 +103,32 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
+
+class IngredientList(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredient',
+        verbose_name='Рецепт владелец',
+    )
+    ingredients = models.ForeignKey(
+        Ingredient,
+        related_name='recipe',
+        verbose_name='Продукт',
+        on_delete=models.CASCADE,
+    )
+    amount = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name='Количество',
+    )
+
+    def __str__(self):
+        return f'{self.recipe}, {self.ingredients}, {self.amount}'
+
+    class Meta:
+        ordering = ('recipe', )
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Список ингредиентов'
 
 class Favorite(models.Model):
     user = models.ForeignKey(
@@ -126,24 +158,3 @@ class Purchase(models.Model):
     class Meta:
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'
-
-
-class Ingredient(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='ingredients'
-    )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.PROTECT,
-    )
-    measurement_unit = models.CharField(
-        max_length=16,
-        choices=CHOICES
-    )
-    amount = models.FloatField()
-
-    class Meta:
-        verbose_name = 'Ингредиент'
-        verbose_name_plural = 'Ингредиенты'
