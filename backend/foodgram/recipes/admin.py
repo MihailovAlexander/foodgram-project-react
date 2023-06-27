@@ -16,9 +16,8 @@ class RecipeAdmin(admin.ModelAdmin):
         'created',
     )
     fields = (
-        ('name', 'cooking_time',),
-        ('author', 'tags',),
-        ('text',),
+        ('name', 'author', 'cooking_time',),
+        ('text', 'tags',),
         ('image',),
     )
     list_editable = ('author',)

@@ -70,7 +70,7 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     image = models.ImageField(
-        upload_to='recipes/',
+        upload_to='images/',
         null=True,
         blank=True
     )
