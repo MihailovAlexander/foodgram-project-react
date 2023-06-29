@@ -27,3 +27,4 @@ class SubscriptionAdmin(admin.ModelAdmin):
     ]
     list_filter = ['user__username', 'author__username']
     empty_value_display = '-пусто-'
+

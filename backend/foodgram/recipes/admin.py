@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientList, Purchase, Recipe,
-                     Subscription, Tag)
+from .models import Favorite, Ingredient, IngredientList, Purchase, Recipe, Tag
 
 
 @admin.register(Recipe)
@@ -60,18 +59,6 @@ class PurchaseAdmin(admin.ModelAdmin):
     # list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk',
-        'user',
-        'following',
-    )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
-    empty_value_display = '-пусто-'
-
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = (
@@ -97,13 +84,3 @@ class IngredientAdmin(admin.ModelAdmin):
     # search_fields = ('text',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
-
-
-'''admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(IngredientList, IngredientListAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(Purchase, PurchaseAdmin)
-admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-'''

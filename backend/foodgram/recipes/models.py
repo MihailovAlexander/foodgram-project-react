@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 CHOICES = (
-    ('г', 'г'),
+    ('г', 'г.'),
     ('кг', 'кг'),
     ('стакан', 'стакан'),
     ('по вкусу', 'по вкусу'),
@@ -45,19 +45,19 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    product = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
     measurement_unit = models.CharField(
         max_length=16,
         choices=CHOICES
     )
 
     class Meta:
-        ordering = ('product', )
+        ordering = ('name', )
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self) -> str:
-        return f'{self.product}, {self.measurement_unit}'
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Recipe(models.Model):
@@ -146,28 +146,6 @@ class Favorite(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user} / {self.recipe}'
-
-
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        User,
-        related_name='follower',
-        on_delete=models.CASCADE,
-        verbose_name='Кто подписывается'
-    )
-    following = models.ForeignKey(
-        User,
-        related_name='following',
-        on_delete=models.CASCADE,
-        verbose_name='На кого подписывается',
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-
-    def __str__(self) -> str:
-        return f'{self.user} подписан на {self.following}'
 
 
 class Purchase(models.Model):
