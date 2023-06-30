@@ -159,15 +159,11 @@ class Purchase(models.Model):
         related_name='purchases',
         on_delete=models.CASCADE,
     )
-    created = models.DateTimeField(
-        auto_now_add=True,
-        editable=False,
-    )
+
 
     class Meta:
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'
-        ordering = ('-created', )
 
     def __str__(self) -> str:
         return f'{self.user} / {self.recipe}'

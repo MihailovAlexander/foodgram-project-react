@@ -68,6 +68,19 @@ class IngredientListSerializer(serializers.ModelSerializer):
         ]
 
 
+class RecipeDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+        read_only_fields = ('__all__', )
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     """GET-Сериализатор модели Рецепт. """
 
