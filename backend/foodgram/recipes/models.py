@@ -98,7 +98,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
-        return f'{self.name}, автор: {self.author.username}'
+        return f'{self.name}, автор: {self.author}'
 
 
 class IngredientList(models.Model):
@@ -159,7 +159,6 @@ class Purchase(models.Model):
         related_name='purchases',
         on_delete=models.CASCADE,
     )
-
 
     class Meta:
         verbose_name = 'Покупка'

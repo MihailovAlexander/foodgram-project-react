@@ -1,42 +1,16 @@
-from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
-# from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientList, Purchase,
                             Recipe, Tag)
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
+from users.models import Subscription, User
 
-User = get_user_model()
 
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
         fields = ['id', 'name', 'color', 'slug']
-
-
-class UserSerializer(UserSerializer):
-
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = [
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed'
-        ]
-
-    def get_is_subscribed(self, author):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return Subscription.objects.filter(
-            user=request.user, author=author
-        ).exists()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -68,28 +42,80 @@ class IngredientListSerializer(serializers.ModelSerializer):
         ]
 
 
-class RecipeDetailsSerializer(serializers.ModelSerializer):
+class FullUserSerializer(UserSerializer):
+
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = Recipe
-        fields = (
+        model = User
+        fields = [
+            'email',
             'id',
-            'name',
-            'image',
-            'cooking_time',
-        )
-        read_only_fields = ('__all__', )
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        ]
+
+    def get_is_subscribed(self, obj):
+        user_request = self.context.get('user_request')
+        return Subscription.objects.filter(
+            user=user_request, author=obj
+        ).exists()
+
+    def get_recipes(self, current_user):
+        request = self.context.get('request')
+        return RecipeDetailsSerializer(
+            current_user.recipes,
+            many=True,
+            context={'request': request}
+            ).data
+
+    def get_recipes_count(self, current_user):
+        return current_user.recipes.count()
+
+
+class ShortUserSerializer(FullUserSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        ]
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password'
+        ]
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    """GET-Сериализатор модели Рецепт. """
 
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
-    author = UserSerializer(read_only=True)
+    author = ShortUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_cart')
+    is_in_shopping_cart = serializers.SerializerMethodField()
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -109,19 +135,62 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_ingredients(self, obj):
         ingredients = IngredientList.objects.filter(recipe=obj)
         return IngredientListSerializer(ingredients, many=True).data
-    
+
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
         return Favorite.objects.filter(
-            user=request.user, recipe_id=obj
+            user=request.user, recipe=obj
         ).exists()
-    
+
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
         return Purchase.objects.filter(
-            user=request.user, recipe_id=obj
+            user=request.user, recipe=obj
         ).exists()
+
+
+class RecipeDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+        read_only_fields = ('__all__', )
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
+    is_subscribed = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+
+    def get_recipes(self, obj):
+        recipes = obj.author.recipes.all()
+        serializer = RecipeDetailsSerializer(recipes, many=True)
+        return serializer.data
