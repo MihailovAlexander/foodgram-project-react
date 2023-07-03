@@ -73,7 +73,7 @@ class FullUserSerializer(UserSerializer):
             current_user.recipes,
             many=True,
             context={'request': request}
-            ).data
+        ).data
 
     def get_recipes_count(self, current_user):
         return current_user.recipes.count()

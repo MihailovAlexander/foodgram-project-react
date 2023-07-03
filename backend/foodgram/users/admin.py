@@ -22,7 +22,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = [
         'pk',
         'user',
-         'author'
+        'author'
     ]
     search_fields = [
         'user__username',
@@ -32,4 +32,3 @@ class SubscriptionAdmin(admin.ModelAdmin):
     ]
     list_filter = ['user__username', 'author__username']
     empty_value_display = '-пусто-'
-

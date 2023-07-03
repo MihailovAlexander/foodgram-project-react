@@ -120,7 +120,7 @@ class IngredientList(models.Model):
     )
 
     class Meta:
-        ordering = ('recipe__name',)
+        ordering = ('recipe__name', )
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Список ингредиентов'
 

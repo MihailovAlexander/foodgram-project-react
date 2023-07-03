@@ -23,6 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name',)
     empty_value_display = '-пусто-'
 
+
 @admin.register(IngredientList)
 class IngredientListAdmin(admin.ModelAdmin):
     list_display = (
@@ -35,6 +36,7 @@ class IngredientListAdmin(admin.ModelAdmin):
     list_filter = ('recipe', 'ingredients',)
     empty_value_display = '-пусто-'
 
+
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = (
@@ -42,10 +44,8 @@ class FavoriteAdmin(admin.ModelAdmin):
         'user',
         'recipe',
     )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
@@ -54,10 +54,7 @@ class PurchaseAdmin(admin.ModelAdmin):
         'user',
         'recipe',
     )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
-    empty_value_display = '-пусто-'
+
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -67,10 +64,8 @@ class TagAdmin(admin.ModelAdmin):
         'color',
         'slug',
     )
-    # list_editable = ('group',)
-    # search_fields = ('text',)
-    # list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -78,9 +73,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'pk',
         'name',
         'measurement_unit',
-        # 'amount',
     )
     list_editable = ('name', 'measurement_unit',)
-    # search_fields = ('text',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
