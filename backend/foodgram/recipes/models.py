@@ -29,11 +29,11 @@ class Tag(models.Model):
     name = models.CharField(
         max_length=50,
         unique=True
-        )
+    )
     color = models.CharField(
         max_length=16,
         unique=True
-        )
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
