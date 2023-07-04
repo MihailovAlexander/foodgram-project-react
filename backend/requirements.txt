@@ -2,6 +2,7 @@ Django==3.2.16
 pytest==6.2.4
 pytest-pythonpath==0.7.3
 pytest-django==4.4.0
+django-colorfield==0.8.0
 django-filter==23.2
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.2

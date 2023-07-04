@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -52,41 +51,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
         recipe_obj = get_object_or_404(Recipe, pk=pk)
-        args_user_recipe = {
-            'user': request.user,
-            'recipe': recipe_obj,
-        }
         if request.method == 'POST':
             return create_record(
                 obj=recipe_obj,
                 obj_class=Favorite,
-                request_args=args_user_recipe,
+                user=request.user,
+                recipe=recipe_obj,
                 serializer=RecipeDetailsSerializer
             )
         elif request.method == 'DELETE':
             return delete_record(
                 obj_class=Favorite,
-                request_args=args_user_recipe
+                user=request.user,
+                recipe=recipe_obj,
             )
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
         recipe_obj = get_object_or_404(Recipe, pk=pk)
-        args_user_recipe = {
-            'user': request.user,
-            'recipe': recipe_obj,
-        }
         if request.method == 'POST':
             return create_record(
                 obj=recipe_obj,
                 obj_class=Purchase,
-                request_args=args_user_recipe,
+                user=request.user,
+                recipe=recipe_obj,
                 serializer=RecipeDetailsSerializer
             )
         elif request.method == 'DELETE':
             return delete_record(
                 obj_class=Purchase,
-                request_args=args_user_recipe
+                user=request.user,
+                recipe=recipe_obj,
             )
 
     @action(methods=['GET'], detail=False)
@@ -96,22 +91,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {'errors': 'Ваш список покупок пуст!'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        shopping_recipes = Recipe.objects.filter(
-            pk__in=[
-                Purchase.objects.filter(
-                    user=self.request.user
-                ).values_list('recipe', flat=True)
-            ]
-        ).values_list('pk', flat=True)
+
         total_ingredients = IngredientList.objects.filter(
-            recipe__in=shopping_recipes,
-        ).values(
-            'ingredients__name',
-            'ingredients__measurement_unit',
-        ).annotate(
-            Sum('amount', distinct=True)
-        )
-        today = datetime.now().strftime("%Y.%m.%d")
+            recipe__purchases__user=request.user
+        ).order_by('ingredients__name').values(
+            'ingredients__name', 'ingredients__measurement_unit'
+        ).annotate(Sum('amount', distinct=True))
+
+        today = timezone.now().strftime("%Y.%m.%d")
         txt_list = []
         txt_list.append(f'"Продуктовый помощник". Покупки на {today}:')
         for ingredient in total_ingredients:
@@ -157,7 +144,7 @@ class SubscribeView(APIView):
         return Response(
             FullUserSerializer(
                 author_obj,
-                context={'user_request': request.user}
+                context={'current_user': request.user}
             ).data,
             status=status.HTTP_201_CREATED,
         )
@@ -190,8 +177,11 @@ class SubscriptionsView(ListAPIView):
         return self.get_paginated_response(serializer.data)
 
 
-def create_record(obj, obj_class, request_args, serializer):
-    already_existed, created = obj_class.objects.get_or_create(**request_args)
+def create_record(obj, obj_class, user, recipe, serializer):
+    already_existed, created = obj_class.objects.get_or_create(
+        user=user,
+        recipe=recipe
+        )
     if not created:
         return Response(
             {'errors': 'Ошибка при создании записи.'},
@@ -203,9 +193,9 @@ def create_record(obj, obj_class, request_args, serializer):
     )
 
 
-def delete_record(obj_class, request_args):
+def delete_record(obj_class, user, recipe):
     try:
-        record = obj_class.objects.get(**request_args)
+        record = obj_class.objects.get(user=user, recipe=recipe)
     except obj_class.DoesNotExist:
         return Response(
             {'errors': 'Удаление не удалось.'},

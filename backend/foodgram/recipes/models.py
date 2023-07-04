@@ -1,27 +1,8 @@
+from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 
-CHOICES = (
-    ('г', 'г.'),
-    ('кг', 'кг'),
-    ('стакан', 'стакан'),
-    ('по вкусу', 'по вкусу'),
-    ('ст. л.', 'ст. л.'),
-    ('шт.', 'шт.'),
-    ('мл', 'мл'),
-    ('ч. л.', 'ч. л.'),
-    ('ст. л.', 'ст. л.'),
-    ('капля', 'капля'),
-    ('звездочка', 'звездочка'),
-    ('щепотка', 'щепотка'),
-    ('горсть', 'горсть'),
-    ('кусок', 'кусок'),
-    ('пакет', 'пакет'),
-    ('долька', 'долька'),
-    ('банка', 'банка'),
-    ('упаковка', 'упаковка'),
-    ('зубчик', 'зубчик'),
-)
 User = get_user_model()
 
 
@@ -30,10 +11,7 @@ class Tag(models.Model):
         max_length=50,
         unique=True
     )
-    color = models.CharField(
-        max_length=16,
-        unique=True
-    )
+    color = ColorField(max_length=7)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -47,8 +25,7 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
     measurement_unit = models.CharField(
-        max_length=16,
-        choices=CHOICES
+        max_length=16
     )
 
     class Meta:
@@ -86,7 +63,11 @@ class Recipe(models.Model):
         related_name='recipes',
     )
     cooking_time = models.PositiveSmallIntegerField(
-        default=0
+        default=1,
+        validators=[
+            MinValueValidator(1),
+        ]
+
     )
     created = models.DateTimeField(
         auto_now_add=True,
@@ -115,8 +96,11 @@ class IngredientList(models.Model):
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
-        default=0,
+        default=1,
         verbose_name='Количество',
+        validators=[
+            MinValueValidator(1),
+        ],
     )
 
     class Meta:

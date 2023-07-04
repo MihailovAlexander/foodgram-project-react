@@ -3,6 +3,22 @@ from django.contrib import admin
 from .models import Favorite, Ingredient, IngredientList, Purchase, Recipe, Tag
 
 
+admin.site.register(IngredientList)
+
+
+class IngredientListInline(admin.TabularInline):
+    model = IngredientList
+    list_display = (
+        'pk',
+        'recipe',
+        'ingredients',
+        'amount',
+    )
+    list_editable = ('ingredients',)
+    list_filter = ('recipe', 'ingredients',)
+    empty_value_display = '-пусто-'
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
@@ -22,19 +38,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('author__username', 'name',)
     list_filter = ('author', 'name',)
     empty_value_display = '-пусто-'
-
-
-@admin.register(IngredientList)
-class IngredientListAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk',
-        'recipe',
-        'ingredients',
-        'amount',
-    )
-    list_editable = ('ingredients',)
-    list_filter = ('recipe', 'ingredients',)
-    empty_value_display = '-пусто-'
+    inlines = [IngredientListInline, ]
 
 
 @admin.register(Favorite)

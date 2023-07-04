@@ -26,7 +26,6 @@ class RecipeFilter(filters.FilterSet):
         ).values_list('recipe', flat=True)
         if filter_value:
             return queryset.filter(pk__in=favorites_ids)
-        return queryset.exclude(pk__in=favorites_ids)
 
     def get_is_in_shopping_cart(self, queryset, filter_name, filter_value):
         purchase_ids = Purchase.objects.filter(
@@ -34,4 +33,3 @@ class RecipeFilter(filters.FilterSet):
         ).values_list('recipe', flat=True)
         if filter_value:
             return queryset.filter(pk__in=purchase_ids)
-        return queryset.exclude(pk__in=purchase_ids)
