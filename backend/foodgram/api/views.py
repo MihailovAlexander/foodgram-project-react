@@ -181,7 +181,7 @@ def create_record(obj, obj_class, user, recipe, serializer):
     already_existed, created = obj_class.objects.get_or_create(
         user=user,
         recipe=recipe
-        )
+    )
     if not created:
         return Response(
             {'errors': 'Ошибка при создании записи.'},
