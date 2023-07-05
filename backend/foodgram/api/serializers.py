@@ -63,9 +63,10 @@ class FullUserSerializer(UserSerializer):
         ]
 
     def get_is_subscribed(self, obj):
-        user_request = self.context.get('current_user')
+        # user_request = self.context.get('user_request')
+        request = self.context.get('request')
         return Subscription.objects.filter(
-            user=user_request, author=obj
+            user=request.user, author=obj
         ).exists()
 
     def get_recipes(self, current_user):

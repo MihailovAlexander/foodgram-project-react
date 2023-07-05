@@ -142,7 +142,7 @@ class SubscribeView(APIView):
         return Response(
             FullUserSerializer(
                 author_obj,
-                context={'current_user': request.user}
+                context={'request': request}
             ).data,
             status=status.HTTP_201_CREATED,
         )
