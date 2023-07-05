@@ -1,6 +1,5 @@
-from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 User = get_user_model()
@@ -11,12 +10,19 @@ class Tag(models.Model):
         max_length=50,
         unique=True
     )
-    color = ColorField(max_length=7)
+    color = models.CharField(
+        max_length=7,
+        validators=[
+            RegexValidator(regex=r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                           message='Цвет должен быть в формате HEX')
+        ],
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+        unique_together = ('name', 'slug')
 
     def __str__(self) -> str:
         return f'{self.name}, {self.slug}'
@@ -63,7 +69,6 @@ class Recipe(models.Model):
         related_name='recipes',
     )
     cooking_time = models.PositiveSmallIntegerField(
-        default=1,
         validators=[
             MinValueValidator(1),
         ]
@@ -96,7 +101,6 @@ class IngredientList(models.Model):
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
-        default=1,
         verbose_name='Количество',
         validators=[
             MinValueValidator(1),

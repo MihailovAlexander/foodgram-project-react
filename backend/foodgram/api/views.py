@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import Subscription, User
-
 from .filters import RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrAdminOrReadOnly
@@ -19,6 +18,7 @@ from recipes.models import (Favorite, Ingredient, IngredientList, Purchase,
 from .serializers import (FullUserSerializer, IngredientSerializer,
                           RecipeDetailsSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer)
+from .utils import create_record, delete_record
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -53,7 +53,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_obj = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             return create_record(
-                obj=recipe_obj,
                 obj_class=Favorite,
                 user=request.user,
                 recipe=recipe_obj,
@@ -71,7 +70,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_obj = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             return create_record(
-                obj=recipe_obj,
                 obj_class=Purchase,
                 user=request.user,
                 recipe=recipe_obj,
@@ -175,34 +173,3 @@ class SubscriptionsView(ListAPIView):
             context={'user_request': request.user}
         )
         return self.get_paginated_response(serializer.data)
-
-
-def create_record(obj, obj_class, user, recipe, serializer):
-    already_existed, created = obj_class.objects.get_or_create(
-        user=user,
-        recipe=recipe
-    )
-    if not created:
-        return Response(
-            {'errors': 'Ошибка при создании записи.'},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    return Response(
-        serializer(obj).data,
-        status=status.HTTP_201_CREATED,
-    )
-
-
-def delete_record(obj_class, user, recipe):
-    try:
-        record = obj_class.objects.get(user=user, recipe=recipe)
-    except obj_class.DoesNotExist:
-        return Response(
-            {'errors': 'Удаление не удалось.'},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    record.delete()
-    return Response(
-        {'detail': 'Удаление успешно.'},
-        status=status.HTTP_204_NO_CONTENT,
-    )
