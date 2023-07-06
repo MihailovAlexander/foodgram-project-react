@@ -20,6 +20,12 @@ services:
       - media_foodgram:/app/media/cats/images/
     depends_on:
       - db
+  frontend:
+    env_file: .env
+    build: ../frontend/
+    command: cp -r /app/result_build/. /frontend_static/
+    volumes:
+      - static_foodgram:/frontend_static
   gateway:
     build: ../nginx/
     # env_file: .env
