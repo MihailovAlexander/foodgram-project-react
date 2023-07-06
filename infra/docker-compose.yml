@@ -20,3 +20,13 @@ services:
       - media_foodgram:/app/media/cats/images/
     depends_on:
       - db
+  gateway:
+    build: ../nginx/
+    # env_file: .env
+    ports:
+      - 9000:80
+    volumes:
+      - static_foodgram:/staticfiles/
+      - media_foodgram:/media/cats/images/
+    depends_on:
+      - backend
