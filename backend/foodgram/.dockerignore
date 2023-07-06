@@ -2,3 +2,4 @@ venv
 .git
 .idea
 .vscode
+.env
