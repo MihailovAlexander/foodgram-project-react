@@ -23,7 +23,7 @@ services:
   frontend:
     env_file: .env
     build: ../frontend/
-    command: cp -r /app/result_build/. /frontend_static/
+    command: cp -r /app/build/. /frontend_static/
     volumes:
       - static_foodgram:/frontend_static
   gateway:
