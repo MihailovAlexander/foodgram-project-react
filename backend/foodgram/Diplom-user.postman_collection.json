@@ -830,7 +830,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"ingredients\": [\r\n    {\r\n      \"id\": 1123,\r\n      \"amount\": 10\r\n    }\r\n  ],\r\n  \"tags\": [\r\n    1,\r\n    2\r\n  ],\r\n  \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==\",\r\n  \"name\": \"test\",\r\n  \"text\": \"test\",\r\n  \"cooking_time\": 1\r\n}",
+							"raw": "{\r\n  \"ingredients\": [\r\n    {\r\n      \"id\": 1123,\r\n      \"amount\": 10\r\n    }\r\n  ],\r\n  \"tags\": [{\"id\": 1}, {\"id\": 2}],\r\n  \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==\",\r\n  \"name\": \"string\",\r\n  \"text\": \"string\",\r\n  \"cooking_time\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
