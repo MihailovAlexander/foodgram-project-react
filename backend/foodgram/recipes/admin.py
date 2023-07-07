@@ -73,19 +73,6 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-'''@admin.register(Ingredient)
-class IngredientAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk',
-        'name',
-        'measurement_unit',
-    )
-    list_editable = ('name', 'measurement_unit',)
-    list_filter = ('name',)
-    empty_value_display = '-пусто-'
-'''
-
-
 class IngredientResource(resources.ModelResource):
 
     class Meta:
@@ -93,6 +80,11 @@ class IngredientResource(resources.ModelResource):
 
 
 class IngredientAdmin(ImportExportModelAdmin):
+    list_display = (
+        'pk',
+        'name',
+        'measurement_unit',
+    )
     resource_classes = [IngredientResource]
 
 
