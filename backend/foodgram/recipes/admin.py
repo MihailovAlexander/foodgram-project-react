@@ -1,4 +1,6 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from .models import Favorite, Ingredient, IngredientList, Purchase, Recipe, Tag
 
@@ -71,7 +73,7 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(Ingredient)
+'''@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -81,3 +83,17 @@ class IngredientAdmin(admin.ModelAdmin):
     list_editable = ('name', 'measurement_unit',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
+'''
+
+
+class IngredientResource(resources.ModelResource):
+
+    class Meta:
+        model = Ingredient
+
+
+class IngredientAdmin(ImportExportModelAdmin):
+    resource_classes = [IngredientResource]
+
+
+admin.site.register(Ingredient, IngredientAdmin)
