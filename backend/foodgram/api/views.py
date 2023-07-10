@@ -17,7 +17,8 @@ from recipes.models import (Favorite, Ingredient, IngredientList, Purchase,
                             Recipe, Tag)
 from .serializers import (FullUserSerializer, IngredientSerializer,
                           RecipeDetailsSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer)
+                          SubscriptionSerializer, TagSerializer,
+                          CreateRecipeSerializer)
 from .utils import create_record, delete_record
 
 
@@ -43,10 +44,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrAdminOrReadOnly, ]
-    serializer_class = RecipeSerializer
+    # serializer_class = RecipeSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return CreateRecipeSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
