@@ -17,7 +17,7 @@ services:
     env_file: .env
     volumes:
       - static_foodgram:/backend_static/
-      - media_foodgram:/app/media/cats/images/
+      - media_foodgram:/app/media/images/
     depends_on:
       - db
   frontend:
@@ -33,6 +33,6 @@ services:
       - 9000:80
     volumes:
       - static_foodgram:/staticfiles/
-      - media_foodgram:/media/cats/images/
+      - media_foodgram:/media/images/
     depends_on:
       - backend
