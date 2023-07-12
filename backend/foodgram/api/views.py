@@ -114,7 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 (
                     f'* {ingredient.get("ingredients__name")} '
                     f'({ingredient.get("ingredients__measurement_unit")}) '
-                    f'{ingredient.get("amount__sum")}'
+                    f'{ingredient.get("amount")}'
                 )
             )
         response = HttpResponse(
