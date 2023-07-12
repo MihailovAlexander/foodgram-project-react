@@ -219,7 +219,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return RecipeSerializer(instance, context={
             'request': self.context.get('request')
         }).data
-    
+
 
 class RecipeDetailsSerializer(serializers.ModelSerializer):
 
