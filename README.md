@@ -38,7 +38,7 @@ sudo docker compose -f docker-compose.production.yml up
 Клонируем себе репозиторий: 
 
 ```bash 
-git clone git@github.com:MihailovAlexander/foodgram-project-react.git
+git clone git@github.com:MihailovAlexander/foodgram.git
 ```
 
 Переходим в папку `infra`:
