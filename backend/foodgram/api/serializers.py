@@ -8,21 +8,24 @@ from users.models import Subscription, User
 
 
 class TagSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели Tag."""
+    
     class Meta:
         model = Tag
         fields = ['id', 'name', 'color', 'slug']
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели Ingredient."""
+    
     class Meta:
         model = Ingredient
         fields = ['id', 'name', 'measurement_unit']
 
 
 class IngredientListSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели IngredientList."""
+    
     id = serializers.ReadOnlyField(
         source='ingredients.id'
     )
@@ -81,7 +84,8 @@ class FullUserSerializer(UserSerializer):
 
 
 class ShortUserSerializer(FullUserSerializer):
-
+    """Cериализатор для модели User сокращенный."""
+    
     class Meta:
         model = User
         fields = [
@@ -97,7 +101,8 @@ class ShortUserSerializer(FullUserSerializer):
 
 
 class AddIngredientListSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для добавления записей в модели IngredientList."""
+    
     id = serializers.IntegerField()
     amount = serializers.IntegerField()
 
@@ -107,7 +112,9 @@ class AddIngredientListSerializer(serializers.ModelSerializer):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-
+    """Cериализатор для модели User.
+        Выводится после регистрации пользователя."""
+    
     class Meta:
         model = User
         fields = [
@@ -120,7 +127,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели Recipe."""
+    
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
     author = ShortUserSerializer(read_only=True)
@@ -161,7 +169,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class CreateRecipeSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для создания записей в модели Recipe."""
+    
     author = UserSerializer(read_only=True)
     ingredients = AddIngredientListSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
@@ -222,7 +231,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeDetailsSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели Recipe упрощенный."""
+    
     class Meta:
         model = Recipe
         fields = (
@@ -235,7 +245,8 @@ class RecipeDetailsSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-
+    """Cериализатор для модели Subscription."""
+    
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
     username = serializers.ReadOnlyField(source='author.username')
